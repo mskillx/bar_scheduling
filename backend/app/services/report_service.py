@@ -48,6 +48,7 @@ class ReportService:
         result = await self.db.execute(
             select(
                 Employee.id,
+                Employee.hourly_rate,
                 User.first_name,
                 User.last_name,
                 func.sum(
@@ -63,7 +64,7 @@ class ReportService:
                     Shift.status != ShiftStatus.cancelled,
                 )
             )
-            .group_by(Employee.id, User.first_name, User.last_name)
+            .group_by(Employee.id, Employee.hourly_rate, User.first_name, User.last_name)
             .order_by(User.last_name, User.first_name)
         )
         rows = result.all()
@@ -73,6 +74,8 @@ class ReportService:
                 first_name=r.first_name,
                 last_name=r.last_name,
                 total_hours=round(float(r.total_hours or 0), 2),
+                hourly_rate=round(float(r.hourly_rate or 0), 2),
+                expected_salary=round(float(r.total_hours or 0) * float(r.hourly_rate or 0), 2),
             )
             for r in rows
         ]

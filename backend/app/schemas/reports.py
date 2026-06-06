@@ -7,6 +7,8 @@ class EmployeeHours(BaseModel):
     first_name: str
     last_name: str
     total_hours: float
+    hourly_rate: float
+    expected_salary: float
 
 
 class WeeklyReport(BaseModel):

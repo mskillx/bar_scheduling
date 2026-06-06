@@ -153,7 +153,10 @@
     "hoursByEmployee": "Ore per Dipendente — {{period}}",
     "employeeHoursTable": "Tabella Ore Dipendenti",
     "noData": "Nessun dato per questo periodo",
-    "hours": "Ore"
+    "hours": "Ore",
+    "expectedSalary": "Stipendio previsto",
+    "totalExpectedSalary": "Stipendio totale previsto",
+    "hourlyRate": "Tariffa oraria"
   },
   "topNav": {
     "changePasswordWarning": "⚠️ Cambia la tua password predefinita"

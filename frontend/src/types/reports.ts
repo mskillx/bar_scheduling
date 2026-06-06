@@ -3,6 +3,8 @@ export interface EmployeeHours {
   first_name: string
   last_name: string
   total_hours: number
+  hourly_rate: number
+  expected_salary: number
 }
 
 export interface HoursReport {

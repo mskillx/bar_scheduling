@@ -41,6 +41,14 @@ export default function ReportsPage() {
     hours: e.total_hours,
   }))
 
+  const totalSalary = (monthlyQ.data?.employees || []).reduce(
+    (sum, e) => sum + e.expected_salary,
+    0,
+  )
+
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(value)
+
   const isLoading = weeklyQ.isLoading || monthlyQ.isLoading
 
   return (
@@ -72,13 +80,13 @@ export default function ReportsPage() {
       </div>
 
       {isLoading ? (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {Array.from({ length: 4 }).map((_, i) => (
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="card animate-pulse h-24" />
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <StatsCard
             label={t('reports.thisWeek')}
             value={`${weeklyQ.data?.total_hours.toFixed(1) || 0}h`}
@@ -106,6 +114,12 @@ export default function ReportsPage() {
             }
             icon="⏱️"
             color="orange"
+          />
+          <StatsCard
+            label={t('reports.totalExpectedSalary')}
+            value={formatCurrency(totalSalary)}
+            icon="💶"
+            color="purple"
           />
         </div>
       )}
@@ -155,6 +169,9 @@ export default function ReportsPage() {
                     />
                     <span className="text-sm font-medium text-white w-14 text-right">
                       {e.total_hours.toFixed(1)}h
+                    </span>
+                    <span className="text-sm font-medium text-green-400 w-20 text-right">
+                      {formatCurrency(e.expected_salary)}
                     </span>
                   </div>
                 </div>

@@ -153,7 +153,10 @@
     "hoursByEmployee": "Hours by Employee — {{period}}",
     "employeeHoursTable": "Employee Hours Table",
     "noData": "No data for this period",
-    "hours": "Hours"
+    "hours": "Hours",
+    "expectedSalary": "Expected Salary",
+    "totalExpectedSalary": "Total expected salary",
+    "hourlyRate": "Hourly rate"
   },
   "topNav": {
     "changePasswordWarning": "⚠️ Please change your default password"

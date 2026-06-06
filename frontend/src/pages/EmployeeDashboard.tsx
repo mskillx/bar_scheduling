@@ -145,6 +145,7 @@ export default function EmployeeDashboard() {
             firstDay={1}
             slotMinTime={SLOT_MIN_TIME}
             slotMaxTime={SLOT_MAX_TIME}
+            slotLabelContent={(arg) => format(arg.date, 'HH.mm')}
             eventContent={(info) => (
               <div className="p-1 text-xs overflow-hidden">
                 <div className="font-medium">

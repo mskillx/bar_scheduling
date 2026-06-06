@@ -15,10 +15,32 @@ import ShiftContextMenu from '@/components/shifts/ShiftContextMenu'
 import { SLOT_MIN_TIME, SLOT_MAX_TIME } from '@/constants/schedule'
 import type { ShiftCreate, ShiftCreateMulti, ShiftUpdate, Shift } from '@/types/shift'
 
-const statusColors: Record<string, string> = {
-  scheduled: '#8e1db5',
-  completed: '#16a34a',
-  cancelled: '#6b7280',
+const EMPLOYEE_COLORS = [
+  '#8e1db5', // purple
+  '#1d6db5', // blue
+  '#b51d4a', // rose
+  '#1db57a', // emerald
+  '#b5891d', // amber
+  '#5b1db5', // violet
+  '#b5531d', // orange
+  '#1d9fb5', // cyan
+  '#b51d8e', // magenta
+  '#1db5b5', // teal
+  '#6db51d', // lime
+  '#b5001d', // red
+  '#001db5', // indigo
+  '#b59a1d', // gold
+  '#1d4ab5', // cobalt
+  '#7ab51d', // yellow-green
+  '#b5421d', // burnt orange
+  '#1d78b5', // sky
+  '#9a1db5', // orchid
+  '#1db54a', // green
+]
+
+function employeeColor(employeeId: number, status: string): string {
+  if (status === 'cancelled') return '#6b7280'
+  return EMPLOYEE_COLORS[employeeId % EMPLOYEE_COLORS.length]
 }
 
 export default function Schedule() {
@@ -48,8 +70,8 @@ export default function Schedule() {
     title: s.employee_name || `Employee #${s.employee_id}`,
     start: s.start_datetime,
     end: s.end_datetime,
-    backgroundColor: statusColors[s.status] || statusColors.scheduled,
-    borderColor: statusColors[s.status] || statusColors.scheduled,
+    backgroundColor: employeeColor(s.employee_id, s.status),
+    borderColor: employeeColor(s.employee_id, s.status),
     extendedProps: { shift: s },
   }))
 

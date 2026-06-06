@@ -8,7 +8,7 @@ import { shiftsApi } from '@/api/shifts'
 import { usersApi } from '@/api/users'
 import Modal from '@/components/common/Modal'
 import ShiftForm from '@/components/shifts/ShiftForm'
-import type { Shift, ShiftCreate, ShiftUpdate } from '@/types/shift'
+import type { Shift, ShiftCreate, ShiftCreateMulti, ShiftUpdate } from '@/types/shift'
 import { formatTime, shiftDurationHours } from '@/utils/helpers'
 
 export default function ShiftManagement() {
@@ -196,9 +196,24 @@ export default function ShiftManagement() {
 
       <Modal open={createOpen} onClose={() => setCreateOpen(false)} title={t('shift.createShift')}>
         <ShiftForm
-          onSubmit={(data) => createMutation.mutate(data as ShiftCreate)}
+          onSubmit={async (data) => {
+            if ('employee_ids' in data && Array.isArray((data as ShiftCreateMulti).employee_ids)) {
+              const { employee_ids, ...rest } = data as ShiftCreateMulti
+              await Promise.all(
+                employee_ids.map((employee_id) =>
+                  shiftsApi.create({ ...rest, employee_id } as ShiftCreate)
+                )
+              )
+              qc.invalidateQueries({ queryKey: ['shifts'] })
+              toast.success(t('shift.created'))
+              setCreateOpen(false)
+            } else {
+              createMutation.mutate(data as ShiftCreate)
+            }
+          }}
           onCancel={() => setCreateOpen(false)}
           loading={createMutation.isPending}
+          multiEmployee
         />
       </Modal>
 
