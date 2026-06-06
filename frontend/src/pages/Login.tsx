@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import toast from 'react-hot-toast'
 import { useAuth } from '@/hooks/useAuth'
 import type { LoginRequest } from '@/types/auth'
 
 export default function Login() {
+  const { t } = useTranslation()
   const { login } = useAuth()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
@@ -20,10 +22,10 @@ export default function Login() {
     setLoading(true)
     try {
       const user = await login(data)
-      toast.success(`Welcome back, ${user.first_name}!`)
+      toast.success(t('auth.welcomeBack', { name: user.first_name }))
       navigate('/schedule')
     } catch (err: any) {
-      toast.error(err.response?.data?.detail || 'Login failed')
+      toast.error(err.response?.data?.detail || t('auth.loginFailed'))
     } finally {
       setLoading(false)
     }
@@ -36,20 +38,20 @@ export default function Login() {
           <div className="w-14 h-14 bg-brand-600 rounded-2xl flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4">
             S
           </div>
-          <h1 className="text-2xl font-bold text-white">Sterlin Scheduling</h1>
-          <p className="text-gray-400 text-sm mt-1">Sign in to your account</p>
+          <h1 className="text-2xl font-bold text-white">{t('app.name')}</h1>
+          <p className="text-gray-400 text-sm mt-1">{t('auth.signInToAccount')}</p>
         </div>
 
         <div className="card">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
-              <label className="label">Email</label>
+              <label className="label">{t('auth.email')}</label>
               <input
                 type="email"
                 className="input"
-                placeholder="you@example.com"
+                placeholder={t('auth.emailPlaceholder')}
                 autoComplete="email"
-                {...register('email', { required: 'Email is required' })}
+                {...register('email', { required: t('auth.emailRequired') })}
               />
               {errors.email && (
                 <p className="text-xs text-red-400 mt-1">{errors.email.message}</p>
@@ -57,13 +59,13 @@ export default function Login() {
             </div>
 
             <div>
-              <label className="label">Password</label>
+              <label className="label">{t('auth.password')}</label>
               <input
                 type="password"
                 className="input"
                 placeholder="••••••••"
                 autoComplete="current-password"
-                {...register('password', { required: 'Password is required' })}
+                {...register('password', { required: t('auth.passwordRequired') })}
               />
               {errors.password && (
                 <p className="text-xs text-red-400 mt-1">{errors.password.message}</p>
@@ -75,13 +77,13 @@ export default function Login() {
               className="btn-primary w-full mt-2"
               disabled={loading}
             >
-              {loading ? 'Signing in…' : 'Sign in'}
+              {loading ? t('auth.signingIn') : t('auth.signIn')}
             </button>
           </form>
         </div>
 
         <p className="text-center text-xs text-gray-600 mt-6">
-          Default admin: admin@example.com / ChangeMe123!
+          {t('auth.defaultAdmin')}
         </p>
       </div>
     </div>

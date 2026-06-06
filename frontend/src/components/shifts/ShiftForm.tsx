@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { format, addDays, parseISO } from 'date-fns'
 import { useQuery } from '@tanstack/react-query'
 import { usersApi } from '@/api/users'
 import { shiftsApi } from '@/api/shifts'
+import { DEFAULT_SHIFT_START, DEFAULT_SHIFT_END } from '@/constants/schedule'
 import type { ShiftCreate, ShiftCreateMulti, ShiftUpdate } from '@/types/shift'
 
 interface ShiftFormProps {
@@ -24,18 +26,27 @@ function extractDate(datetimeLocal: string | undefined): string {
   return format(new Date(), 'yyyy-MM-dd')
 }
 
+function getDefaultStart(dt?: string): string {
+  if (dt) return toLocalDatetimeValue(dt)
+  return `${format(new Date(), 'yyyy-MM-dd')}T${DEFAULT_SHIFT_START}`
+}
+
+function getDefaultEnd(dt?: string): string {
+  if (dt) return toLocalDatetimeValue(dt)
+  return `${format(new Date(), 'yyyy-MM-dd')}T${DEFAULT_SHIFT_END}`
+}
+
 export default function ShiftForm({ defaultValues, onSubmit, onCancel, loading, multiEmployee }: ShiftFormProps) {
+  const { t } = useTranslation()
   const { data: users = [] } = useQuery({ queryKey: ['users'], queryFn: usersApi.list })
   const { data: templates = [] } = useQuery({ queryKey: ['templates'], queryFn: shiftsApi.listTemplates })
 
   const activeEmployees = users.filter((u) => u.active && u.employee_id)
 
-  const initialStart = toLocalDatetimeValue(defaultValues?.start_datetime)
+  const initialStart = getDefaultStart(defaultValues?.start_datetime)
 
-  // Separate date state drives the template picker; stays in sync with start_datetime
-  const [shiftDate, setShiftDate] = useState<string>(extractDate(initialStart || undefined))
+  const [shiftDate, setShiftDate] = useState<string>(extractDate(initialStart))
 
-  // For multi-employee mode
   const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<number[]>(
     defaultValues?.employee_id ? [defaultValues.employee_id] : []
   )
@@ -52,7 +63,7 @@ export default function ShiftForm({ defaultValues, onSubmit, onCancel, loading, 
     defaultValues: {
       employee_id: defaultValues?.employee_id,
       start_datetime: initialStart,
-      end_datetime: toLocalDatetimeValue(defaultValues?.end_datetime),
+      end_datetime: getDefaultEnd(defaultValues?.end_datetime),
       notes: defaultValues?.notes || '',
       status: defaultValues?.status || 'scheduled',
     },
@@ -62,15 +73,16 @@ export default function ShiftForm({ defaultValues, onSubmit, onCancel, loading, 
   const watchedEnd = watch('end_datetime')
 
   useEffect(() => {
-    const startVal = toLocalDatetimeValue(defaultValues?.start_datetime)
+    const startVal = getDefaultStart(defaultValues?.start_datetime)
+    const endVal = getDefaultEnd(defaultValues?.end_datetime)
     reset({
       employee_id: defaultValues?.employee_id,
       start_datetime: startVal,
-      end_datetime: toLocalDatetimeValue(defaultValues?.end_datetime),
+      end_datetime: endVal,
       notes: defaultValues?.notes || '',
       status: defaultValues?.status || 'scheduled',
     })
-    setShiftDate(extractDate(startVal || undefined))
+    setShiftDate(extractDate(startVal))
     if (defaultValues?.employee_id) {
       setSelectedEmployeeIds([defaultValues.employee_id])
     } else if (multiEmployee) {
@@ -78,7 +90,6 @@ export default function ShiftForm({ defaultValues, onSubmit, onCancel, loading, 
     }
   }, [defaultValues, reset, multiEmployee])
 
-  // Keep shiftDate in sync when user edits start_datetime manually
   useEffect(() => {
     if (watchedStart) {
       const d = watchedStart.split('T')[0]
@@ -101,7 +112,6 @@ export default function ShiftForm({ defaultValues, onSubmit, onCancel, loading, 
     const endTime = tpl.end_time.slice(0, 5)
     const startHour = parseInt(tpl.start_time.split(':')[0])
     const endHour = parseInt(tpl.end_time.split(':')[0])
-    // End crosses midnight when end hour is earlier than start hour
     const endDateStr =
       endHour < startHour
         ? format(addDays(parseISO(shiftDate), 1), 'yyyy-MM-dd')
@@ -141,9 +151,8 @@ export default function ShiftForm({ defaultValues, onSubmit, onCancel, loading, 
 
   return (
     <form onSubmit={handleSubmit(submit)} className="space-y-4">
-      {/* Date picker — drives template application */}
       <div>
-        <label className="label">Date</label>
+        <label className="label">{t('shift.date')}</label>
         <input
           type="date"
           className="input"
@@ -152,19 +161,18 @@ export default function ShiftForm({ defaultValues, onSubmit, onCancel, loading, 
         />
       </div>
 
-      {/* Template selector */}
       {templates.length > 0 && (
         <div>
-          <label className="label">Apply Template</label>
+          <label className="label">{t('shift.applyTemplate')}</label>
           <select
             className="input"
             onChange={(e) => applyTemplate(e.target.value)}
             defaultValue=""
           >
-            <option value="">Choose template…</option>
-            {templates.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.name} ({t.start_time.slice(0, 5)} – {t.end_time.slice(0, 5)})
+            <option value="">{t('shift.chooseTemplate')}</option>
+            {templates.map((tpl) => (
+              <option key={tpl.id} value={tpl.id}>
+                {tpl.name} ({tpl.start_time.slice(0, 5)} – {tpl.end_time.slice(0, 5)})
               </option>
             ))}
           </select>
@@ -172,11 +180,11 @@ export default function ShiftForm({ defaultValues, onSubmit, onCancel, loading, 
       )}
 
       <div>
-        <label className="label">Start</label>
+        <label className="label">{t('shift.start')}</label>
         <input
           type="datetime-local"
           className="input"
-          {...register('start_datetime', { required: 'Start time is required' })}
+          {...register('start_datetime', { required: t('shift.startRequired') })}
         />
         {errors.start_datetime && (
           <p className="text-xs text-red-400 mt-1">{errors.start_datetime.message}</p>
@@ -184,22 +192,21 @@ export default function ShiftForm({ defaultValues, onSubmit, onCancel, loading, 
       </div>
 
       <div>
-        <label className="label">End</label>
+        <label className="label">{t('shift.end')}</label>
         <input
           type="datetime-local"
           className="input"
-          {...register('end_datetime', { required: 'End time is required' })}
+          {...register('end_datetime', { required: t('shift.endRequired') })}
         />
         {errors.end_datetime && (
           <p className="text-xs text-red-400 mt-1">{errors.end_datetime.message}</p>
         )}
       </div>
 
-      {/* Employee selection */}
       {multiEmployee ? (
         <div>
           <div className="flex items-center justify-between mb-1">
-            <label className="label mb-0">Employees</label>
+            <label className="label mb-0">{t('shift.employees')}</label>
             <div className="flex gap-3">
               <button
                 type="button"
@@ -209,14 +216,14 @@ export default function ShiftForm({ defaultValues, onSubmit, onCancel, loading, 
                   setEmployeeError(false)
                 }}
               >
-                Select all
+                {t('shift.selectAll')}
               </button>
               <button
                 type="button"
                 className="text-xs text-gray-400 hover:text-gray-300 transition-colors"
                 onClick={() => setSelectedEmployeeIds([])}
               >
-                Clear
+                {t('shift.clear')}
               </button>
             </div>
           </div>
@@ -239,17 +246,17 @@ export default function ShiftForm({ defaultValues, onSubmit, onCancel, loading, 
             ))}
           </div>
           {employeeError && (
-            <p className="text-xs text-red-400 mt-1">Select at least one employee</p>
+            <p className="text-xs text-red-400 mt-1">{t('shift.selectAtLeastOne')}</p>
           )}
         </div>
       ) : (
         <div>
-          <label className="label">Employee</label>
+          <label className="label">{t('shift.employee')}</label>
           <select
             className="input"
-            {...register('employee_id', { required: 'Employee is required', valueAsNumber: true })}
+            {...register('employee_id', { required: t('shift.employeeRequired'), valueAsNumber: true })}
           >
-            <option value="">Select employee…</option>
+            <option value="">{t('shift.selectEmployee')}</option>
             {activeEmployees.map((u) => (
               <option key={u.employee_id} value={u.employee_id!}>
                 {u.first_name} {u.last_name}
@@ -263,20 +270,20 @@ export default function ShiftForm({ defaultValues, onSubmit, onCancel, loading, 
       )}
 
       <div>
-        <label className="label">Status</label>
+        <label className="label">{t('shift.status')}</label>
         <select className="input" {...register('status')}>
-          <option value="scheduled">Scheduled</option>
-          <option value="completed">Completed</option>
-          <option value="cancelled">Cancelled</option>
+          <option value="scheduled">{t('shift.scheduled')}</option>
+          <option value="completed">{t('shift.completed')}</option>
+          <option value="cancelled">{t('shift.cancelled')}</option>
         </select>
       </div>
 
       <div>
-        <label className="label">Notes (optional)</label>
+        <label className="label">{t('shift.notes')}</label>
         <textarea
           className="input resize-none"
           rows={2}
-          placeholder="Any notes…"
+          placeholder={t('shift.notesPlaceholder')}
           {...register('notes')}
         />
       </div>
@@ -284,13 +291,13 @@ export default function ShiftForm({ defaultValues, onSubmit, onCancel, loading, 
       <div className="flex gap-3 pt-2">
         <button type="submit" className="btn-primary flex-1" disabled={loading}>
           {loading
-            ? 'Saving…'
+            ? t('shift.saving')
             : multiEmployee && selectedEmployeeIds.length > 1
-              ? `Create ${selectedEmployeeIds.length} Shifts`
-              : 'Save Shift'}
+              ? t('shift.createShifts', { count: selectedEmployeeIds.length })
+              : t('shift.saveShift')}
         </button>
         <button type="button" className="btn-secondary" onClick={onCancel}>
-          Cancel
+          {t('shift.cancel')}
         </button>
       </div>
     </form>

@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import dayGridPlugin from '@fullcalendar/daygrid'
@@ -6,11 +6,13 @@ import interactionPlugin from '@fullcalendar/interaction'
 import type { EventClickArg, EventDropArg, DateSelectArg } from '@fullcalendar/core'
 import type { EventResizeDoneArg } from '@fullcalendar/interaction'
 import { format } from 'date-fns'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/authStore'
 import { useShifts, useCreateShift, useUpdateShift, useDeleteShift } from '@/hooks/useShifts'
 import Modal from '@/components/common/Modal'
 import ShiftForm from '@/components/shifts/ShiftForm'
 import ShiftContextMenu from '@/components/shifts/ShiftContextMenu'
+import { SLOT_MIN_TIME, SLOT_MAX_TIME } from '@/constants/schedule'
 import type { ShiftCreate, ShiftCreateMulti, ShiftUpdate, Shift } from '@/types/shift'
 
 const statusColors: Record<string, string> = {
@@ -20,6 +22,7 @@ const statusColors: Record<string, string> = {
 }
 
 export default function Schedule() {
+  const { t } = useTranslation()
   const { user } = useAuthStore()
   const isAdmin = user?.role === 'admin'
 
@@ -28,7 +31,7 @@ export default function Schedule() {
     end: format(new Date(), "yyyy-MM-dd'T'23:59:59'Z'"),
   })
 
-  const { data: shifts = [], isLoading } = useShifts({ start: dateRange.start, end: dateRange.end })
+  const { data: shifts = [] } = useShifts({ start: dateRange.start, end: dateRange.end })
   const createShift = useCreateShift()
   const updateShift = useUpdateShift()
   const deleteShift = useDeleteShift()
@@ -62,15 +65,6 @@ export default function Schedule() {
         end_datetime: info.endStr,
       })
       setCreateModalOpen(true)
-    },
-    [isAdmin]
-  )
-
-  const handleEventClick = useCallback(
-    (info: EventClickArg) => {
-      if (!isAdmin) return
-      const shift: Shift = info.event.extendedProps.shift
-      info.jsEvent.preventDefault()
     },
     [isAdmin]
   )
@@ -149,20 +143,20 @@ export default function Schedule() {
   }
 
   const handleDelete = async (shiftId: number) => {
-    if (!confirm('Delete this shift?')) return
+    if (!confirm(t('shift.deleteConfirm'))) return
     await deleteShift.mutateAsync(shiftId)
   }
 
   return (
     <div className="h-full flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-white">Schedule</h1>
+        <h1 className="text-xl font-semibold text-white">{t('schedule.title')}</h1>
         {isAdmin && (
           <button
             className="btn-primary"
             onClick={() => { setNewShiftDefaults({}); setCreateModalOpen(true) }}
           >
-            + New Shift
+            {t('shift.newShift')}
           </button>
         )}
       </div>
@@ -185,8 +179,8 @@ export default function Schedule() {
             dayMaxEvents
             weekends
             firstDay={1}
-            slotMinTime="06:00:00"
-            slotMaxTime="30:00:00"
+            slotMinTime={SLOT_MIN_TIME}
+            slotMaxTime={SLOT_MAX_TIME}
             datesSet={handleDatesSet}
             select={handleDateSelect}
             eventClick={handleEventContextMenu}
@@ -217,7 +211,7 @@ export default function Schedule() {
       <Modal
         open={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
-        title="Create Shift"
+        title={t('shift.createShift')}
       >
         <ShiftForm
           defaultValues={newShiftDefaults}
@@ -231,7 +225,7 @@ export default function Schedule() {
       <Modal
         open={editModalOpen}
         onClose={() => { setEditModalOpen(false); setSelectedShift(null) }}
-        title="Edit Shift"
+        title={t('shift.editShiftTitle')}
       >
         {selectedShift && (
           <ShiftForm

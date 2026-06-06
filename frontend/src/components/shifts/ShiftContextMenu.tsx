@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface ShiftContextMenuProps {
   x: number
@@ -9,6 +10,7 @@ interface ShiftContextMenuProps {
 }
 
 export default function ShiftContextMenu({ x, y, onEdit, onDelete, onClose }: ShiftContextMenuProps) {
+  const { t } = useTranslation()
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -29,13 +31,13 @@ export default function ShiftContextMenu({ x, y, onEdit, onDelete, onClose }: Sh
         className="w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-dark-600 transition-colors"
         onClick={() => { onEdit(); onClose() }}
       >
-        ✏️ Edit shift
+        {t('shift.editShift')}
       </button>
       <button
         className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-dark-600 transition-colors"
         onClick={() => { onDelete(); onClose() }}
       >
-        🗑️ Delete shift
+        {t('shift.deleteShift')}
       </button>
     </div>
   )

@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { format, startOfMonth, endOfMonth, startOfWeek, addDays } from 'date-fns'
+import { useTranslation } from 'react-i18next'
+import { format, startOfMonth, endOfMonth, startOfWeek } from 'date-fns'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  LineChart, Line, Legend
 } from 'recharts'
 import { reportsApi } from '@/api/reports'
 import StatsCard from '@/components/dashboard/StatsCard'
@@ -12,6 +12,7 @@ import LoadingSkeleton from '@/components/common/LoadingSkeleton'
 const CHART_COLORS = ['#8e1db5', '#3b82f6', '#16a34a', '#f97316', '#ec4899', '#14b8a6']
 
 export default function ReportsPage() {
+  const { t } = useTranslation()
   const now = new Date()
   const [year, setYear] = useState(now.getFullYear())
   const [month, setMonth] = useState(now.getMonth() + 1)
@@ -45,7 +46,7 @@ export default function ReportsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <h1 className="text-xl font-semibold text-white">Reports</h1>
+        <h1 className="text-xl font-semibold text-white">{t('reports.title')}</h1>
         <div className="flex items-center gap-2">
           <select
             className="input py-1.5 text-sm w-28"
@@ -79,7 +80,7 @@ export default function ReportsPage() {
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <StatsCard
-            label="This week"
+            label={t('reports.thisWeek')}
             value={`${weeklyQ.data?.total_hours.toFixed(1) || 0}h`}
             icon="📅"
             color="purple"
@@ -91,13 +92,13 @@ export default function ReportsPage() {
             color="blue"
           />
           <StatsCard
-            label="Employees this month"
+            label={t('reports.employeesThisMonth')}
             value={monthlyQ.data?.employees.length || 0}
             icon="👥"
             color="green"
           />
           <StatsCard
-            label="Avg hours/employee"
+            label={t('reports.avgHoursEmployee')}
             value={
               monthlyQ.data?.employees.length
                 ? ((monthlyQ.data.total_hours / monthlyQ.data.employees.length)).toFixed(1) + 'h'
@@ -112,7 +113,7 @@ export default function ReportsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="card">
           <h2 className="font-medium text-white mb-4">
-            Hours by Employee — {format(new Date(year, month - 1), 'MMMM yyyy')}
+            {t('reports.hoursByEmployee', { period: format(new Date(year, month - 1), 'MMMM yyyy') })}
           </h2>
           {monthlyQ.isLoading ? (
             <LoadingSkeleton rows={3} />
@@ -125,7 +126,7 @@ export default function ReportsPage() {
                 <Tooltip
                   contentStyle={{ background: '#1a1a1f', border: '1px solid #2e2e35', borderRadius: 8 }}
                   labelStyle={{ color: '#fff' }}
-                  formatter={(v: number) => [`${v}h`, 'Hours']}
+                  formatter={(v: number) => [`${v}h`, t('reports.hours')]}
                 />
                 <Bar dataKey="hours" fill="#8e1db5" radius={[4, 4, 0, 0]} />
               </BarChart>
@@ -134,7 +135,7 @@ export default function ReportsPage() {
         </div>
 
         <div className="card">
-          <h2 className="font-medium text-white mb-4">Employee Hours Table</h2>
+          <h2 className="font-medium text-white mb-4">{t('reports.employeeHoursTable')}</h2>
           {monthlyQ.isLoading ? (
             <LoadingSkeleton rows={4} />
           ) : (
@@ -159,7 +160,7 @@ export default function ReportsPage() {
                 </div>
               ))}
               {!monthlyQ.data?.employees.length && (
-                <p className="text-sm text-gray-500 text-center py-4">No data for this period</p>
+                <p className="text-sm text-gray-500 text-center py-4">{t('reports.noData')}</p>
               )}
             </div>
           )}

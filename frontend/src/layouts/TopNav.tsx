@@ -1,6 +1,8 @@
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/hooks/useAuth'
 
 export default function TopNav() {
+  const { t } = useTranslation()
   const { user, logout } = useAuth()
 
   return (
@@ -8,7 +10,7 @@ export default function TopNav() {
       <div className="text-sm text-gray-400">
         {user?.must_change_password && (
           <span className="text-yellow-400 font-medium">
-            ⚠️ Please change your default password
+            {t('topNav.changePasswordWarning')}
           </span>
         )}
       </div>
@@ -20,7 +22,7 @@ export default function TopNav() {
           onClick={logout}
           className="text-sm text-gray-400 hover:text-red-400 transition-colors"
         >
-          Sign out
+          {t('auth.signOut')}
         </button>
       </div>
     </header>

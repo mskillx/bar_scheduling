@@ -2,15 +2,18 @@ import { useMemo } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import dayGridPlugin from '@fullcalendar/daygrid'
+import { useTranslation } from 'react-i18next'
 import {
   startOfWeek, endOfWeek, startOfMonth, endOfMonth, isAfter, format, parseISO
 } from 'date-fns'
 import { useAuthStore } from '@/stores/authStore'
 import { useShifts } from '@/hooks/useShifts'
 import StatsCard from '@/components/dashboard/StatsCard'
-import { shiftDurationHours, formatDateTime } from '@/utils/helpers'
+import { shiftDurationHours } from '@/utils/helpers'
+import { SLOT_MIN_TIME, SLOT_MAX_TIME } from '@/constants/schedule'
 
 export default function EmployeeDashboard() {
+  const { t } = useTranslation()
   const { user } = useAuthStore()
   const now = new Date()
 
@@ -59,7 +62,7 @@ export default function EmployeeDashboard() {
 
   const calEvents = allShifts.map((s) => ({
     id: String(s.id),
-    title: 'My Shift',
+    title: t('schedule.myShift'),
     start: s.start_datetime,
     end: s.end_datetime,
     backgroundColor: s.status === 'cancelled' ? '#6b7280' : '#8e1db5',
@@ -69,32 +72,32 @@ export default function EmployeeDashboard() {
   return (
     <div className="space-y-6">
       <h1 className="text-xl font-semibold text-white">
-        My Dashboard — {user?.first_name} {user?.last_name}
+        {t('dashboard.title', { name: `${user?.first_name} ${user?.last_name}` })}
       </h1>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatsCard
-          label="This week"
+          label={t('dashboard.thisWeek')}
           value={`${stats.weekHours.toFixed(1)}h`}
           icon="📅"
           color="purple"
         />
         <StatsCard
-          label="This month"
+          label={t('dashboard.thisMonth')}
           value={`${stats.monthHours.toFixed(1)}h`}
           icon="📆"
           color="blue"
         />
         <StatsCard
-          label="Upcoming shifts"
+          label={t('dashboard.upcomingShifts')}
           value={stats.upcoming.length}
           icon="🔜"
           color="green"
         />
         <StatsCard
-          label="Scheduled hours"
+          label={t('dashboard.scheduledHours')}
           value={`${stats.scheduledTotal.toFixed(1)}h`}
-          sub="upcoming"
+          sub={t('dashboard.upcoming')}
           icon="⏱️"
           color="orange"
         />
@@ -102,9 +105,9 @@ export default function EmployeeDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="card">
-          <h2 className="font-medium text-white mb-4">Upcoming Shifts</h2>
+          <h2 className="font-medium text-white mb-4">{t('dashboard.upcomingShifts')}</h2>
           {stats.upcoming.length === 0 ? (
-            <p className="text-sm text-gray-500">No upcoming shifts</p>
+            <p className="text-sm text-gray-500">{t('dashboard.noUpcomingShifts')}</p>
           ) : (
             <div className="space-y-3">
               {stats.upcoming.map((s) => {
@@ -126,7 +129,7 @@ export default function EmployeeDashboard() {
         </div>
 
         <div className="card col-span-2">
-          <h2 className="font-medium text-white mb-4">My Schedule</h2>
+          <h2 className="font-medium text-white mb-4">{t('dashboard.mySchedule')}</h2>
           <FullCalendar
             plugins={[timeGridPlugin, dayGridPlugin]}
             initialView="timeGridWeek"
@@ -140,8 +143,8 @@ export default function EmployeeDashboard() {
             editable={false}
             selectable={false}
             firstDay={1}
-            slotMinTime="06:00:00"
-            slotMaxTime="28:00:00"
+            slotMinTime={SLOT_MIN_TIME}
+            slotMaxTime={SLOT_MAX_TIME}
             eventContent={(info) => (
               <div className="p-1 text-xs overflow-hidden">
                 <div className="font-medium">

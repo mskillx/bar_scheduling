@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { format, startOfWeek, addDays, addWeeks, subWeeks } from 'date-fns'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import toast from 'react-hot-toast'
 import { useShifts, useDeleteShift } from '@/hooks/useShifts'
 import { shiftsApi } from '@/api/shifts'
@@ -11,11 +12,12 @@ import type { Shift, ShiftCreate, ShiftUpdate } from '@/types/shift'
 import { formatTime, shiftDurationHours } from '@/utils/helpers'
 
 export default function ShiftManagement() {
+  const { t } = useTranslation()
   const qc = useQueryClient()
   const [weekStart, setWeekStart] = useState(() => startOfWeek(new Date(), { weekStartsOn: 1 }))
   const weekEnd = addDays(weekStart, 7)
 
-  const { data: shifts = [], isLoading } = useShifts({
+  const { data: shifts = [] } = useShifts({
     start: weekStart.toISOString(),
     end: weekEnd.toISOString(),
   })
@@ -27,14 +29,22 @@ export default function ShiftManagement() {
 
   const createMutation = useMutation({
     mutationFn: (data: ShiftCreate) => shiftsApi.create(data),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['shifts'] }); toast.success('Shift created'); setCreateOpen(false) },
-    onError: (e: any) => toast.error(e.response?.data?.detail || 'Failed'),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['shifts'] })
+      toast.success(t('shift.created'))
+      setCreateOpen(false)
+    },
+    onError: (e: any) => toast.error(e.response?.data?.detail || t('user.failed')),
   })
 
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: number; data: ShiftUpdate }) => shiftsApi.update(id, data),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['shifts'] }); toast.success('Shift updated'); setEditShift(null) },
-    onError: (e: any) => toast.error(e.response?.data?.detail || 'Failed'),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['shifts'] })
+      toast.success(t('shift.updated'))
+      setEditShift(null)
+    },
+    onError: (e: any) => toast.error(e.response?.data?.detail || t('user.failed')),
   })
 
   const copyPreviousWeek = async () => {
@@ -57,16 +67,16 @@ export default function ShiftManagement() {
       } catch {}
     }
     qc.invalidateQueries({ queryKey: ['shifts'] })
-    toast.success(`Copied ${created} shifts from previous week`)
+    toast.success(t('shiftManagement.copiedShifts', { count: created }))
   }
 
   const deleteWeek = async () => {
-    if (!confirm('Delete all shifts this week?')) return
+    if (!confirm(t('shift.deleteWeekConfirm'))) return
     for (const s of shifts) {
       await shiftsApi.delete(s.id)
     }
     qc.invalidateQueries({ queryKey: ['shifts'] })
-    toast.success('Week cleared')
+    toast.success(t('shiftManagement.weekCleared'))
   }
 
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
@@ -74,7 +84,7 @@ export default function ShiftManagement() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <h1 className="text-xl font-semibold text-white">Shift Management</h1>
+        <h1 className="text-xl font-semibold text-white">{t('shiftManagement.title')}</h1>
         <div className="flex items-center gap-2 flex-wrap">
           <div className="flex items-center gap-1 bg-dark-800 border border-dark-600 rounded-lg p-1">
             <button
@@ -94,13 +104,13 @@ export default function ShiftManagement() {
             </button>
           </div>
           <button className="btn-secondary text-xs" onClick={copyPreviousWeek}>
-            📋 Copy prev week
+            {t('shiftManagement.copyPrevWeek')}
           </button>
           <button className="btn-danger text-xs" onClick={deleteWeek}>
-            🗑️ Clear week
+            {t('shiftManagement.clearWeek')}
           </button>
           <button className="btn-primary text-sm" onClick={() => setCreateOpen(true)}>
-            + New Shift
+            {t('shift.newShift')}
           </button>
         </div>
       </div>
@@ -132,15 +142,15 @@ export default function ShiftManagement() {
                         className="text-xs text-brand-400 hover:text-brand-300"
                         onClick={() => setEditShift(s)}
                       >
-                        Edit
+                        {t('user.edit')}
                       </button>
                       <button
                         className="text-xs text-red-400 hover:text-red-300"
                         onClick={() => {
-                          if (confirm('Delete shift?')) deleteShift.mutate(s.id)
+                          if (confirm(t('shift.deleteConfirm'))) deleteShift.mutate(s.id)
                         }}
                       >
-                        Del
+                        {t('shift.del')}
                       </button>
                     </div>
                   </div>
@@ -153,14 +163,14 @@ export default function ShiftManagement() {
 
       <div className="card p-0 overflow-hidden">
         <div className="px-6 py-4 border-b border-dark-600">
-          <h2 className="font-medium text-white">Weekly Summary</h2>
+          <h2 className="font-medium text-white">{t('shiftManagement.weeklySummary')}</h2>
         </div>
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-dark-600">
-              <th className="text-left px-6 py-2 text-gray-400">Employee</th>
-              <th className="text-left px-6 py-2 text-gray-400">Shifts</th>
-              <th className="text-left px-6 py-2 text-gray-400">Hours</th>
+              <th className="text-left px-6 py-2 text-gray-400">{t('shift.employee')}</th>
+              <th className="text-left px-6 py-2 text-gray-400">{t('shiftManagement.shifts')}</th>
+              <th className="text-left px-6 py-2 text-gray-400">{t('shiftManagement.hours')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-dark-700">
@@ -184,7 +194,7 @@ export default function ShiftManagement() {
         </table>
       </div>
 
-      <Modal open={createOpen} onClose={() => setCreateOpen(false)} title="Create Shift">
+      <Modal open={createOpen} onClose={() => setCreateOpen(false)} title={t('shift.createShift')}>
         <ShiftForm
           onSubmit={(data) => createMutation.mutate(data as ShiftCreate)}
           onCancel={() => setCreateOpen(false)}
@@ -192,7 +202,7 @@ export default function ShiftManagement() {
         />
       </Modal>
 
-      <Modal open={!!editShift} onClose={() => setEditShift(null)} title="Edit Shift">
+      <Modal open={!!editShift} onClose={() => setEditShift(null)} title={t('shift.editShiftTitle')}>
         {editShift && (
           <ShiftForm
             defaultValues={{ ...editShift, notes: editShift.notes ?? undefined }}

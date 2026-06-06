@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { shiftsApi } from '@/api/shifts'
 import type { ShiftCreate, ShiftUpdate } from '@/types/shift'
 import toast from 'react-hot-toast'
+import i18n from '@/i18n'
 
 export const SHIFTS_KEY = 'shifts'
 
@@ -18,10 +19,10 @@ export function useCreateShift() {
     mutationFn: (data: ShiftCreate) => shiftsApi.create(data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: [SHIFTS_KEY] })
-      toast.success('Shift created')
+      toast.success(i18n.t('shift.created'))
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.detail || 'Failed to create shift')
+      toast.error(error.response?.data?.detail || i18n.t('shift.failedCreate'))
     },
   })
 }
@@ -32,10 +33,10 @@ export function useUpdateShift() {
     mutationFn: ({ id, data }: { id: number; data: ShiftUpdate }) => shiftsApi.update(id, data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: [SHIFTS_KEY] })
-      toast.success('Shift updated')
+      toast.success(i18n.t('shift.updated'))
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.detail || 'Failed to update shift')
+      toast.error(error.response?.data?.detail || i18n.t('shift.failedUpdate'))
     },
   })
 }
@@ -46,9 +47,9 @@ export function useDeleteShift() {
     mutationFn: (id: number) => shiftsApi.delete(id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: [SHIFTS_KEY] })
-      toast.success('Shift deleted')
+      toast.success(i18n.t('shift.deleted'))
     },
-    onError: () => toast.error('Failed to delete shift'),
+    onError: () => toast.error(i18n.t('shift.failedDelete')),
   })
 }
 
