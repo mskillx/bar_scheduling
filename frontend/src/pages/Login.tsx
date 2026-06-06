@@ -1,10 +1,10 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useForm } from 'react-hook-form'
-import { useTranslation } from 'react-i18next'
-import toast from 'react-hot-toast'
 import { useAuth } from '@/hooks/useAuth'
 import type { LoginRequest } from '@/types/auth'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 
 export default function Login() {
   const { t } = useTranslation()
@@ -81,10 +81,6 @@ export default function Login() {
             </button>
           </form>
         </div>
-
-        <p className="text-center text-xs text-gray-600 mt-6">
-          {t('auth.defaultAdmin')}
-        </p>
       </div>
     </div>
   )
