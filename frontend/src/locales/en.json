@@ -6,6 +6,7 @@
   "nav": {
     "schedule": "Schedule",
     "dashboard": "My Dashboard",
+    "checkIn": "Check In / Out",
     "profile": "Profile",
     "users": "Users",
     "shiftManagement": "Shift Management",
@@ -166,6 +167,29 @@
     "expectedSalary": "Expected Salary",
     "totalExpectedSalary": "Total expected salary",
     "hourlyRate": "Hourly rate"
+  },
+  "attendance": {
+    "title": "Check In / Out",
+    "todayShifts": "Today's shifts",
+    "noShiftsToday": "No shifts scheduled for today",
+    "loading": "Loading…",
+    "scheduled": "Scheduled",
+    "checkIn": "Check In",
+    "checkOut": "Check Out",
+    "checkingIn": "Checking in…",
+    "checkingOut": "Checking out…",
+    "checkedInAt": "Checked in at",
+    "checkedOutAt": "Checked out at",
+    "shiftActive": "Shift in progress",
+    "completed": "Completed",
+    "expectedWeek": "Expected hours (week)",
+    "effectiveWeek": "Effective hours (week)",
+    "expectedMonth": "Expected hours (month)",
+    "effectiveMonth": "Effective hours (month)",
+    "checkInSuccess": "Check-in recorded",
+    "checkInFailed": "Failed to check in",
+    "checkOutSuccess": "Check-out recorded",
+    "checkOutFailed": "Failed to check out"
   },
   "topNav": {
     "changePasswordWarning": "⚠️ Please change your default password"

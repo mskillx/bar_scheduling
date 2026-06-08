@@ -6,6 +6,7 @@
   "nav": {
     "schedule": "Turni",
     "dashboard": "La mia Dashboard",
+    "checkIn": "Timbratura",
     "profile": "Profilo",
     "users": "Utenti",
     "shiftManagement": "Gestione Turni",
@@ -166,6 +167,29 @@
     "expectedSalary": "Stipendio previsto",
     "totalExpectedSalary": "Stipendio totale previsto",
     "hourlyRate": "Tariffa oraria"
+  },
+  "attendance": {
+    "title": "Timbratura",
+    "todayShifts": "Turni di oggi",
+    "noShiftsToday": "Nessun turno programmato per oggi",
+    "loading": "Caricamento…",
+    "scheduled": "Previsto",
+    "checkIn": "Entrata",
+    "checkOut": "Uscita",
+    "checkingIn": "Timbro entrata…",
+    "checkingOut": "Timbro uscita…",
+    "checkedInAt": "Entrata alle",
+    "checkedOutAt": "Uscita alle",
+    "shiftActive": "Turno in corso",
+    "completed": "Completato",
+    "expectedWeek": "Ore previste (settimana)",
+    "effectiveWeek": "Ore effettive (settimana)",
+    "expectedMonth": "Ore previste (mese)",
+    "effectiveMonth": "Ore effettive (mese)",
+    "checkInSuccess": "Entrata registrata",
+    "checkInFailed": "Errore registrazione entrata",
+    "checkOutSuccess": "Uscita registrata",
+    "checkOutFailed": "Errore registrazione uscita"
   },
   "topNav": {
     "changePasswordWarning": "⚠️ Cambia la tua password predefinita"

@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -24,6 +24,14 @@ export default function EmployeeDashboard() {
   const { t } = useTranslation();
   const { user } = useAuthStore();
   const now = new Date();
+
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  useEffect(() => {
+    const handler = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+  const isMobile = windowWidth < 640;
 
   const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, 1);
   const threeMonthsAhead = new Date(now.getFullYear(), now.getMonth() + 3, 1);
@@ -145,11 +153,11 @@ export default function EmployeeDashboard() {
             plugins={[timeGridPlugin, dayGridPlugin]}
             initialView="timeGridWeek"
             locale={itLocale}
-            headerToolbar={{
-              left: "prev,next today",
-              center: "title",
-              right: "timeGridWeek,dayGridMonth",
-            }}
+            headerToolbar={
+              isMobile
+                ? { left: "prev,next", center: "title", right: "today" }
+                : { left: "prev,next today", center: "title", right: "timeGridWeek,dayGridMonth" }
+            }
             height={380}
             events={calEvents}
             editable={false}

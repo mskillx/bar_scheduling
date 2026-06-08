@@ -13,7 +13,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import { format } from "date-fns";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const EMPLOYEE_COLORS = [
@@ -48,6 +48,14 @@ export default function Schedule() {
   const { t } = useTranslation();
   const { user } = useAuthStore();
   const isAdmin = user?.role === "admin";
+
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  useEffect(() => {
+    const handler = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+  const isMobile = windowWidth < 640;
 
   const [dateRange, setDateRange] = useState({
     start: format(new Date(), "yyyy-MM-dd'T'00:00:00'Z'"),
@@ -213,12 +221,16 @@ export default function Schedule() {
           <FullCalendar
             plugins={[timeGridPlugin, dayGridPlugin, interactionPlugin]}
             locale={itLocale}
-            initialView="timeGridWeek"
-            headerToolbar={{
-              left: "prev,next today",
-              center: "title",
-              right: "dayGridMonth,timeGridWeek,timeGridDay",
-            }}
+            initialView="timeGridDay"
+            headerToolbar={
+              isMobile
+                ? { left: "prev,next", center: "title", right: "today" }
+                : {
+                    left: "prev,next today",
+                    center: "title",
+                    right: "dayGridMonth,timeGridWeek,timeGridDay",
+                  }
+            }
             height="100%"
             events={events}
             editable={isAdmin}

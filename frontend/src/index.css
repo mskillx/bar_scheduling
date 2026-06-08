@@ -61,3 +61,25 @@
 .fc .fc-scrollgrid {
   border-color: #2e2e35;
 }
+
+/* Mobile: stack toolbar rows and shrink buttons */
+@media (max-width: 639px) {
+  .fc .fc-toolbar {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .fc .fc-toolbar-chunk {
+    display: flex;
+    gap: 0.25rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .fc .fc-toolbar-title {
+    font-size: 0.95rem;
+  }
+  .fc .fc-button {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+  }
+}

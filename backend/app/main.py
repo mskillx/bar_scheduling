@@ -6,7 +6,7 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
 from app.core.config import settings
-from app.api.routes import auth, users, shifts, templates, reports
+from app.api.routes import auth, users, shifts, templates, reports, attendance
 
 limiter = Limiter(key_func=get_remote_address)
 
@@ -41,3 +41,4 @@ app.include_router(users.router, prefix="/api")
 app.include_router(shifts.router, prefix="/api")
 app.include_router(templates.router, prefix="/api")
 app.include_router(reports.router, prefix="/api")
+app.include_router(attendance.router, prefix="/api")

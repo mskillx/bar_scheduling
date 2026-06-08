@@ -8,6 +8,7 @@ import UsersPage from "@/pages/admin/Users";
 import ReportsPage from "@/pages/admin/Reports";
 import ShiftManagement from "@/pages/admin/ShiftManagement";
 import ProfilePage from "@/pages/profile/Profile";
+import CheckInPage from "@/pages/CheckIn";
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const { accessToken } = useAuthStore();
@@ -38,6 +39,7 @@ export function AppRoutes() {
         <Route path="schedule" element={<Schedule />} />
         <Route path="dashboard" element={<EmployeeDashboard />} />
         <Route path="profile" element={<ProfilePage />} />
+        <Route path="checkin" element={<CheckInPage />} />
         <Route
           path="admin/users"
           element={

@@ -15,6 +15,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
   const employeeLinks = [
     { to: "/schedule", label: t("nav.schedule"), icon: "📅" },
     { to: "/dashboard", label: t("nav.dashboard"), icon: "🏠" },
+    { to: "/checkin", label: t("nav.checkIn"), icon: "🕐" },
     { to: "/profile", label: t("nav.profile"), icon: "👤" },
   ];
 
