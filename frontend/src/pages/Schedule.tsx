@@ -3,6 +3,7 @@ import FullCalendar from '@fullcalendar/react'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
+import itLocale from '@fullcalendar/core/locales/it'
 import type { EventClickArg, EventDropArg, DateSelectArg } from '@fullcalendar/core'
 import type { EventResizeDoneArg } from '@fullcalendar/interaction'
 import { format } from 'date-fns'
@@ -187,6 +188,7 @@ export default function Schedule() {
         <div className="p-4 h-full">
           <FullCalendar
             plugins={[timeGridPlugin, dayGridPlugin, interactionPlugin]}
+            locale={itLocale}
             initialView="timeGridWeek"
             headerToolbar={{
               left: 'prev,next today',
@@ -203,6 +205,11 @@ export default function Schedule() {
             firstDay={1}
             slotMinTime={SLOT_MIN_TIME}
             slotMaxTime={SLOT_MAX_TIME}
+            slotLabelContent={(arg) => {
+              const h = arg.date.getHours()
+              const m = String(arg.date.getMinutes()).padStart(2, '0')
+              return `${h}.${m}`
+            }}
             datesSet={handleDatesSet}
             select={handleDateSelect}
             eventClick={handleEventContextMenu}
@@ -212,7 +219,7 @@ export default function Schedule() {
               <div className="p-1 overflow-hidden text-xs">
                 <div className="font-medium truncate">{info.event.title}</div>
                 <div className="text-white/70">
-                  {format(info.event.start!, 'HH:mm')} – {info.event.end ? format(info.event.end, 'HH:mm') : ''}
+                  {format(info.event.start!, 'HH:mm').replace(':', '.')} – {info.event.end ? format(info.event.end, 'HH:mm').replace(':', '.') : ''}
                 </div>
               </div>
             )}

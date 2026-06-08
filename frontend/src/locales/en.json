@@ -107,7 +107,16 @@
     "hours": "Hours",
     "copiedShifts_one": "Copied {{count}} shift from previous week",
     "copiedShifts_other": "Copied {{count}} shifts from previous week",
-    "weekCleared": "Week cleared"
+    "weekCleared": "Week cleared",
+    "hourlyCoverage": "Hourly Coverage",
+    "hourlyCoverageDesc": "Number of employees on shift per hour",
+    "hour": "Hour",
+    "copyDay": "Copy day",
+    "pasteDay": "Paste here",
+    "copiedDay_one": "{{count}} shift copied",
+    "copiedDay_other": "{{count}} shifts copied",
+    "pastedShifts_one": "Pasted {{count}} shift",
+    "pastedShifts_other": "Pasted {{count}} shifts"
   },
   "schedule": {
     "title": "Schedule",

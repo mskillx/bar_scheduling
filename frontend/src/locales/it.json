@@ -107,7 +107,16 @@
     "hours": "Ore",
     "copiedShifts_one": "Copiato {{count}} turno dalla settimana precedente",
     "copiedShifts_other": "Copiati {{count}} turni dalla settimana precedente",
-    "weekCleared": "Settimana pulita"
+    "weekCleared": "Settimana pulita",
+    "hourlyCoverage": "Copertura Oraria",
+    "hourlyCoverageDesc": "Numero di dipendenti in turno per fascia oraria",
+    "hour": "Ora",
+    "copyDay": "Copia giorno",
+    "pasteDay": "Incolla qui",
+    "copiedDay_one": "{{count}} turno copiato",
+    "copiedDay_other": "{{count}} turni copiati",
+    "pastedShifts_one": "Incollato {{count}} turno",
+    "pastedShifts_other": "Incollati {{count}} turni"
   },
   "schedule": {
     "title": "Turni",
