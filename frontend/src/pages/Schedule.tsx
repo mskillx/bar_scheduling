@@ -1,20 +1,20 @@
-import { useState, useCallback } from "react";
+import Modal from "@/components/common/Modal";
+import ShiftContextMenu from "@/components/shifts/ShiftContextMenu";
+import ShiftForm from "@/components/shifts/ShiftForm";
+import { SLOT_MAX_TIME, SLOT_MIN_TIME } from "@/constants/schedule";
+import { useCreateShift, useDeleteShift, useShifts, useUpdateShift } from "@/hooks/useShifts";
+import { useAuthStore } from "@/stores/authStore";
+import type { Shift, ShiftCreate, ShiftCreateMulti, ShiftUpdate } from "@/types/shift";
+import type { DateSelectArg, EventClickArg, EventDropArg } from "@fullcalendar/core";
+import itLocale from "@fullcalendar/core/locales/it";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import type { EventResizeDoneArg } from "@fullcalendar/interaction";
+import interactionPlugin from "@fullcalendar/interaction";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import itLocale from "@fullcalendar/core/locales/it";
-import type { EventClickArg, EventDropArg, DateSelectArg } from "@fullcalendar/core";
-import type { EventResizeDoneArg } from "@fullcalendar/interaction";
 import { format } from "date-fns";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useAuthStore } from "@/stores/authStore";
-import { useShifts, useCreateShift, useUpdateShift, useDeleteShift } from "@/hooks/useShifts";
-import Modal from "@/components/common/Modal";
-import ShiftForm from "@/components/shifts/ShiftForm";
-import ShiftContextMenu from "@/components/shifts/ShiftContextMenu";
-import { SLOT_MIN_TIME, SLOT_MAX_TIME } from "@/constants/schedule";
-import type { ShiftCreate, ShiftCreateMulti, ShiftUpdate, Shift } from "@/types/shift";
 
 const EMPLOYEE_COLORS = [
   "#8e1db5", // purple
@@ -57,7 +57,6 @@ export default function Schedule() {
   const { data: shifts = [] } = useShifts({
     start: dateRange.start,
     end: dateRange.end,
-    employee_id: user?.employee_id ?? undefined,
   });
   const createShift = useCreateShift();
   const updateShift = useUpdateShift();
@@ -77,6 +76,7 @@ export default function Schedule() {
   const events = shifts.map((s) => {
     const color = employeeColor(s.employee_id, s.status);
     const isMine = isAdmin || user?.employee_id === s.employee_id;
+    console.log("Is mine?", isMine, "User", user, "Shift employee_id", s.employee_id);
     return {
       id: String(s.id),
       title: s.employee_name || `Employee #${s.employee_id}`,
