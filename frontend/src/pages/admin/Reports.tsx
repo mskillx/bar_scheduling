@@ -1,60 +1,61 @@
-import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { useTranslation } from 'react-i18next'
-import { format, startOfMonth, endOfMonth, startOfWeek } from 'date-fns'
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-} from 'recharts'
-import { reportsApi } from '@/api/reports'
-import StatsCard from '@/components/dashboard/StatsCard'
-import LoadingSkeleton from '@/components/common/LoadingSkeleton'
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
+import { format, startOfMonth, endOfMonth, startOfWeek } from "date-fns";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { reportsApi } from "@/api/reports";
+import StatsCard from "@/components/dashboard/StatsCard";
+import LoadingSkeleton from "@/components/common/LoadingSkeleton";
 
-const CHART_COLORS = ['#8e1db5', '#3b82f6', '#16a34a', '#f97316', '#ec4899', '#14b8a6']
+const CHART_COLORS = ["#8e1db5", "#3b82f6", "#16a34a", "#f97316", "#ec4899", "#14b8a6"];
 
 export default function ReportsPage() {
-  const { t } = useTranslation()
-  const now = new Date()
-  const [year, setYear] = useState(now.getFullYear())
-  const [month, setMonth] = useState(now.getMonth() + 1)
+  const { t } = useTranslation();
+  const now = new Date();
+  const [year, setYear] = useState(now.getFullYear());
+  const [month, setMonth] = useState(now.getMonth() + 1);
 
-  const weekStart = startOfWeek(now, { weekStartsOn: 1 })
-  const monthStart = startOfMonth(new Date(year, month - 1))
-  const monthEnd = endOfMonth(new Date(year, month - 1))
+  const weekStart = startOfWeek(now, { weekStartsOn: 1 });
+  const monthStart = startOfMonth(new Date(year, month - 1));
+  const monthEnd = endOfMonth(new Date(year, month - 1));
 
   const weeklyQ = useQuery({
-    queryKey: ['reports', 'weekly', weekStart.toISOString()],
+    queryKey: ["reports", "weekly", weekStart.toISOString()],
     queryFn: () => reportsApi.weekly(weekStart.toISOString()),
-  })
+  });
 
   const monthlyQ = useQuery({
-    queryKey: ['reports', 'monthly', year, month],
+    queryKey: ["reports", "monthly", year, month],
     queryFn: () => reportsApi.monthly(year, month),
-  })
+  });
 
   const hoursQ = useQuery({
-    queryKey: ['reports', 'hours', monthStart.toISOString(), monthEnd.toISOString()],
+    queryKey: ["reports", "hours", monthStart.toISOString(), monthEnd.toISOString()],
     queryFn: () => reportsApi.hours(monthStart.toISOString(), monthEnd.toISOString()),
-  })
+  });
 
   const barData = (monthlyQ.data?.employees || []).map((e) => ({
-    name: `${e.first_name} ${e.last_name}`.split(' ')[0],
+    name: `${e.first_name} ${e.last_name}`.split(" ")[0],
     hours: e.total_hours,
-  }))
+  }));
 
   const totalSalary = (monthlyQ.data?.employees || []).reduce(
     (sum, e) => sum + e.expected_salary,
     0,
-  )
+  );
 
   const formatCurrency = (value: number) =>
-    new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(value)
+    new Intl.NumberFormat("it-IT", {
+      style: "currency",
+      currency: "EUR",
+    }).format(value);
 
-  const isLoading = weeklyQ.isLoading || monthlyQ.isLoading
+  const isLoading = weeklyQ.isLoading || monthlyQ.isLoading;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <h1 className="text-xl font-semibold text-white">{t('reports.title')}</h1>
+        <h1 className="text-xl font-semibold text-white">{t("reports.title")}</h1>
         <div className="flex items-center gap-2">
           <select
             className="input py-1.5 text-sm w-28"
@@ -63,7 +64,7 @@ export default function ReportsPage() {
           >
             {Array.from({ length: 12 }, (_, i) => (
               <option key={i + 1} value={i + 1}>
-                {format(new Date(year, i), 'MMMM')}
+                {format(new Date(year, i), "MMMM")}
               </option>
             ))}
           </select>
@@ -73,7 +74,9 @@ export default function ReportsPage() {
             onChange={(e) => setYear(Number(e.target.value))}
           >
             {[now.getFullYear() - 1, now.getFullYear(), now.getFullYear() + 1].map((y) => (
-              <option key={y} value={y}>{y}</option>
+              <option key={y} value={y}>
+                {y}
+              </option>
             ))}
           </select>
         </div>
@@ -88,35 +91,35 @@ export default function ReportsPage() {
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <StatsCard
-            label={t('reports.thisWeek')}
+            label={t("reports.thisWeek")}
             value={`${weeklyQ.data?.total_hours.toFixed(1) || 0}h`}
             icon="📅"
             color="purple"
           />
           <StatsCard
-            label={format(new Date(year, month - 1), 'MMMM')}
+            label={format(new Date(year, month - 1), "MMMM")}
             value={`${monthlyQ.data?.total_hours.toFixed(1) || 0}h`}
             icon="📆"
             color="blue"
           />
           <StatsCard
-            label={t('reports.employeesThisMonth')}
+            label={t("reports.employeesThisMonth")}
             value={monthlyQ.data?.employees.length || 0}
             icon="👥"
             color="green"
           />
           <StatsCard
-            label={t('reports.avgHoursEmployee')}
+            label={t("reports.avgHoursEmployee")}
             value={
               monthlyQ.data?.employees.length
-                ? ((monthlyQ.data.total_hours / monthlyQ.data.employees.length)).toFixed(1) + 'h'
-                : '0h'
+                ? (monthlyQ.data.total_hours / monthlyQ.data.employees.length).toFixed(1) + "h"
+                : "0h"
             }
             icon="⏱️"
             color="orange"
           />
           <StatsCard
-            label={t('reports.totalExpectedSalary')}
+            label={t("reports.totalExpectedSalary")}
             value={formatCurrency(totalSalary)}
             icon="💶"
             color="purple"
@@ -127,7 +130,9 @@ export default function ReportsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="card">
           <h2 className="font-medium text-white mb-4">
-            {t('reports.hoursByEmployee', { period: format(new Date(year, month - 1), 'MMMM yyyy') })}
+            {t("reports.hoursByEmployee", {
+              period: format(new Date(year, month - 1), "MMMM yyyy"),
+            })}
           </h2>
           {monthlyQ.isLoading ? (
             <LoadingSkeleton rows={3} />
@@ -138,9 +143,13 @@ export default function ReportsPage() {
                 <XAxis dataKey="name" stroke="#6b7280" tick={{ fontSize: 12 }} />
                 <YAxis stroke="#6b7280" tick={{ fontSize: 12 }} unit="h" />
                 <Tooltip
-                  contentStyle={{ background: '#1a1a1f', border: '1px solid #2e2e35', borderRadius: 8 }}
-                  labelStyle={{ color: '#fff' }}
-                  formatter={(v: number) => [`${v}h`, t('reports.hours')]}
+                  contentStyle={{
+                    background: "#1a1a1f",
+                    border: "1px solid #2e2e35",
+                    borderRadius: 8,
+                  }}
+                  labelStyle={{ color: "#fff" }}
+                  formatter={(v: number) => [`${v}h`, t("reports.hours")]}
                 />
                 <Bar dataKey="hours" fill="#8e1db5" radius={[4, 4, 0, 0]} />
               </BarChart>
@@ -149,13 +158,16 @@ export default function ReportsPage() {
         </div>
 
         <div className="card">
-          <h2 className="font-medium text-white mb-4">{t('reports.employeeHoursTable')}</h2>
+          <h2 className="font-medium text-white mb-4">{t("reports.employeeHoursTable")}</h2>
           {monthlyQ.isLoading ? (
             <LoadingSkeleton rows={4} />
           ) : (
             <div className="space-y-2">
               {(monthlyQ.data?.employees || []).map((e, i) => (
-                <div key={e.employee_id} className="flex items-center justify-between py-2 border-b border-dark-600 last:border-0">
+                <div
+                  key={e.employee_id}
+                  className="flex items-center justify-between py-2 border-b border-dark-600 last:border-0"
+                >
                   <span className="text-sm text-gray-200">
                     {e.first_name} {e.last_name}
                   </span>
@@ -177,12 +189,12 @@ export default function ReportsPage() {
                 </div>
               ))}
               {!monthlyQ.data?.employees.length && (
-                <p className="text-sm text-gray-500 text-center py-4">{t('reports.noData')}</p>
+                <p className="text-sm text-gray-500 text-center py-4">{t("reports.noData")}</p>
               )}
             </div>
           )}
         </div>
       </div>
     </div>
-  )
+  );
 }

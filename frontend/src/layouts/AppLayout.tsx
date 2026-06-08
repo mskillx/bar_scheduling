@@ -1,10 +1,10 @@
-import { useState } from 'react'
-import { Outlet } from 'react-router-dom'
-import Sidebar from './Sidebar'
-import TopNav from './TopNav'
+import { useState } from "react";
+import { Outlet } from "react-router-dom";
+import Sidebar from "./Sidebar";
+import TopNav from "./TopNav";
 
 export default function AppLayout() {
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="flex h-screen bg-dark-900 overflow-hidden">
@@ -16,5 +16,5 @@ export default function AppLayout() {
         </main>
       </div>
     </div>
-  )
+  );
 }

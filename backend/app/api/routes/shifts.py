@@ -21,9 +21,11 @@ async def list_shifts(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    if current_user.role == UserRole.employee:
+    # Employees requesting a specific employee_id can only see their own shifts
+    if current_user.role == UserRole.employee and employee_id is not None:
         emp = await EmployeeRepository(db).get_by_user_id(current_user.id)
-        employee_id = emp.id if emp else -1
+        own_id = emp.id if emp else -1
+        employee_id = own_id
     return await ShiftService(db).get_shifts(start=start, end=end, employee_id=employee_id)
 
 

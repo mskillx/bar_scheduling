@@ -1,25 +1,31 @@
-import { useEffect, useRef } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 interface ShiftContextMenuProps {
-  x: number
-  y: number
-  onEdit: () => void
-  onDelete: () => void
-  onClose: () => void
+  x: number;
+  y: number;
+  onEdit: () => void;
+  onDelete: () => void;
+  onClose: () => void;
 }
 
-export default function ShiftContextMenu({ x, y, onEdit, onDelete, onClose }: ShiftContextMenuProps) {
-  const { t } = useTranslation()
-  const ref = useRef<HTMLDivElement>(null)
+export default function ShiftContextMenu({
+  x,
+  y,
+  onEdit,
+  onDelete,
+  onClose,
+}: ShiftContextMenuProps) {
+  const { t } = useTranslation();
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) onClose()
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [onClose])
+      if (ref.current && !ref.current.contains(e.target as Node)) onClose();
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [onClose]);
 
   return (
     <div
@@ -29,16 +35,22 @@ export default function ShiftContextMenu({ x, y, onEdit, onDelete, onClose }: Sh
     >
       <button
         className="w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-dark-600 transition-colors"
-        onClick={() => { onEdit(); onClose() }}
+        onClick={() => {
+          onEdit();
+          onClose();
+        }}
       >
-        {t('shift.editShift')}
+        {t("shift.editShift")}
       </button>
       <button
         className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-dark-600 transition-colors"
-        onClick={() => { onDelete(); onClose() }}
+        onClick={() => {
+          onDelete();
+          onClose();
+        }}
       >
-        {t('shift.deleteShift')}
+        {t("shift.deleteShift")}
       </button>
     </div>
-  )
+  );
 }

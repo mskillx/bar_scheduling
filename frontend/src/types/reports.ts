@@ -1,25 +1,25 @@
 export interface EmployeeHours {
-  employee_id: number
-  first_name: string
-  last_name: string
-  total_hours: number
-  hourly_rate: number
-  expected_salary: number
+  employee_id: number;
+  first_name: string;
+  last_name: string;
+  total_hours: number;
+  hourly_rate: number;
+  expected_salary: number;
 }
 
 export interface HoursReport {
-  employees: EmployeeHours[]
-  total_hours: number
+  employees: EmployeeHours[];
+  total_hours: number;
 }
 
 export interface WeeklyReport {
-  week_start: string
-  total_hours: number
-  employees: EmployeeHours[]
+  week_start: string;
+  total_hours: number;
+  employees: EmployeeHours[];
 }
 
 export interface MonthlyReport {
-  month: string
-  total_hours: number
-  employees: EmployeeHours[]
+  month: string;
+  total_hours: number;
+  employees: EmployeeHours[];
 }
